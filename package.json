@@ -1,0 +1,64 @@
+{
+  "name": "simple-box",
+  "productName": "Simple Box",
+  "version": "1.0.0",
+  "description": "A simple wireframe and project planner for freelance websites and apps.",
+  "main": "main.js",
+  "author": "Mathew Valdez",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win nsis portable --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.mathewvaldez.simplebox",
+    "productName": "Simple Box",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*",
+      "build/icon.png"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Simple Box",
+      "artifactName": "Simple Box Setup ${version}.exe",
+      "perMachine": false
+    },
+    "portable": {
+      "artifactName": "Simple Box Portable ${version}.exe"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mathewG32/SimpleBox.git"
+  },
+  "homepage": "https://github.com/mathewG32/SimpleBox"
+}
