@@ -32,21 +32,23 @@ label.l{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px}
 .muted{color:var(--muted)}.hint{color:var(--muted);font-size:13px;margin:10px 0 0}
 
 /* home */
-.home{height:100%;overflow:auto;padding:max(7vh,32px) max(5vw,16px) 40px}
-.hero{max-width:640px;margin:0 auto 44px;text-align:center}
+.home{height:100%;overflow:auto;padding:max(6vh,24px) max(4vw,14px) 40px;background:linear-gradient(180deg,#05070bcc 0%,#05070b66 45%,#05070b99 100%),url(wallpaper.webp) center 62%/cover no-repeat #05070b;display:flex;align-items:flex-start;justify-content:center}
+#app{height:100%}
+.glass{width:min(980px,100%);margin:auto 0;padding:clamp(28px,5vw,52px) clamp(18px,4vw,48px) 22px;background:#0d111a8c;border:1px solid #5b8cff40;border-radius:24px;box-shadow:0 30px 80px #000a,inset 0 1px 0 #ffffff12;backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}
+.hero{max-width:640px;margin:0 auto 36px;text-align:center}
 .hero>svg{width:84px;height:84px}
 .hero h1{font-size:clamp(36px,6vw,52px);line-height:1.05;margin:14px 0 8px}
 .hero p{color:var(--muted);font-size:17px;margin:0 0 28px;text-wrap:balance}
 .big{font-size:17px;padding:14px 30px;min-height:52px;border-radius:12px;font-weight:600}
 .rh{max-width:900px;margin:0 auto 12px;font-size:18px}
 .plist{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.pcard{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;cursor:pointer}
+.pcard{position:relative;background:#14171ecc;border:1px solid #ffffff14;border-radius:14px;padding:16px 16px 14px;cursor:pointer}
 .pcard:hover{border-color:var(--line2)}
 .pt{font-weight:600;font-size:16px;padding-right:34px}
 .pm{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:13px;margin-top:12px}
 .pcard .del{position:absolute;top:8px;right:8px;font-size:18px}
 .pcard .del.arm{color:var(--red);font-size:13px;width:auto;padding:0 10px;background:#ff6b6b1a}
-.hfoot{display:flex;gap:16px;justify-content:center;margin-top:36px}
+.hfoot{display:flex;gap:16px;justify-content:center;margin-top:28px}
 .link{background:none;border:0;color:var(--muted);cursor:pointer;text-decoration:underline;font-size:14px;min-height:40px}
 .presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:6px}
 .pre{position:relative;display:flex;flex-direction:column;gap:2px;padding:12px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:var(--bg)}
@@ -348,10 +350,10 @@ function applyTemplate(k,at){
 function renderHome(){
   ui.pid=null;ui.sel=null;ui.drawer=null;
   const list=[...DB.projects].sort((a,b)=>(b.updated||0)-(a.updated||0));
-  $('#app').innerHTML=`<div class="home"><div class="hero">${LOGO}<h1>Simple Box</h1><p>Open a blank canvas for each client job. Lay out the pages, drop in headers and footers, and draw where each button goes.</p><button class="btn primary big" data-act="start">Start project</button></div>
+  $('#app').innerHTML=`<div class="home"><div class="glass"><div class="hero">${LOGO}<h1>Simple Box</h1><p>Open a blank canvas for each client job. Lay out the pages, drop in headers and footers, and draw where each button goes.</p><button class="btn primary big" data-act="start">Start project</button></div>
   ${list.length?`<h2 class="rh">Your projects</h2><div class="plist">${list.map(p=>{const t=p.items.filter(i=>i.type==='task'),d=t.filter(i=>i.status==='done').length,pg=p.items.filter(i=>i.type==='frame'&&i.device).length;
-    return `<div class="pcard" data-act="open" data-id="${p.id}"><div class="pt">${esc(p.name)}</div><div class="muted">${esc(p.client||'No client yet')}</div><div class="pm"><span>${pg?pg+' pages · ':''}${t.length?`${d}/${t.length} tasks`:`${p.items.length} items`}</span><span>${ago(p.updated||Date.now())}</span></div><button class="ib del" data-act="delProject" data-id="${p.id}" aria-label="Delete project">×</button></div>`}).join('')}</div>`:''}
-  <div class="hfoot"><button class="link" data-act="backup">Backup</button><button class="link" data-act="restore">Restore</button></div></div>`;
+    return `<div class="pcard" data-act="open" data-id="${p.id}"><div class="pt">${esc(p.name)}</div><div class="muted">${esc(p.client||'No client yet')}</div><div class="pm"><span>${pg?pg+(pg>1?' pages':' page')+' · ':''}${t.length?`${d}/${t.length} tasks`:`${p.items.length} item${p.items.length===1?'':'s'}`}</span><span>${ago(p.updated||Date.now())}</span></div><button class="ib del" data-act="delProject" data-id="${p.id}" aria-label="Delete project">×</button></div>`}).join('')}</div>`:''}
+  <div class="hfoot"><button class="link" data-act="backup">Backup</button><button class="link" data-act="restore">Restore</button></div></div></div>`;
 }
 
 /* ---------- canvas ---------- */
