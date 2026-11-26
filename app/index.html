@@ -158,7 +158,7 @@ kbd{font:12px Inter,sans-serif;background:var(--panel2);border:1px solid var(--l
 <input type="file" id="imgfile" accept="image/*" hidden>
 <script>
 {
-const KEY='simplebox.v2';
+const KEY='simplebox.v2',APP_VERSION='1.1.0';
 const $=s=>document.querySelector(s);
 const uid=()=>Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -171,9 +171,21 @@ const MCOL=[...COLORS,ACC];
 const mi=c=>Math.max(0,MCOL.indexOf(c));
 const STAT=[['todo','To do','#8d95a8'],['doing','Doing','#5b8cff'],['review','Review','#f2c04b'],['done','Done','#3fd6a0']];
 const TAGS=[['','None'],['design','Design'],['dev','Dev'],['content','Content'],['client','Client']];
-const SHAPES=[['rect','Rectangle'],['square','Square'],['circle','Circle'],['triangle','Triangle'],['diamond','Diamond'],['pill','Rounded']];
-const SHAPE_DEF={rect:[160,100],square:[120,120],circle:[120,120],triangle:[140,120],diamond:[140,120],pill:[180,70]};
-const NAMES={frame:'Page / section',note:'Sticky note',task:'Task',text:'Text box',arrow:'Arrow',pen:'Drawing',shape:'Shape',image:'Image',link:'Flow arrow'};
+const SHAPES=[['rect','Rectangle'],['square','Square'],['circle','Circle'],['pill','Rounded'],['triangle','Triangle'],['rtri','Right triangle'],['diamond','Diamond'],['pentagon','Pentagon'],['hexagon','Hexagon'],['octagon','Octagon'],['star','Star'],['parallelogram','Parallelogram'],['trapezoid','Trapezoid'],['semicircle','Half circle'],['arrowR','Block arrow'],['chevron','Chevron'],['cross','Plus'],['heart','Heart'],['bubble','Speech bubble'],['cylinder','Cylinder']];
+const SHAPE_DEF={rect:[160,100],square:[120,120],circle:[120,120],pill:[180,70],triangle:[140,120],rtri:[140,120],diamond:[140,120],pentagon:[130,124],hexagon:[150,130],octagon:[130,130],star:[140,134],parallelogram:[180,100],trapezoid:[180,100],semicircle:[160,80],arrowR:[180,100],chevron:[150,100],cross:[120,120],heart:[130,120],bubble:[180,130],cylinder:[120,150]};
+const PT=a=>'M'+a.map(p=>p.join(' ')).join('L')+'Z';
+const starPts=(()=>{const a=[];for(let n=0;n<10;n++){const r=n%2?.4:.5,t=-Math.PI/2+n*Math.PI/5;a.push([+(0.5+r*Math.cos(t)).toFixed(3),+(0.52+r*Math.sin(t)*1.04).toFixed(3)])}return a})();
+const ngon=(k,off)=>Array.from({length:k},(_,n)=>{const t=off+n*2*Math.PI/k;return[+(0.5+.5*Math.cos(t)).toFixed(3),+(0.5+.5*Math.sin(t)).toFixed(3)]});
+const UNIT={
+ triangle:PT([[.5,0],[1,1],[0,1]]),rtri:PT([[0,0],[1,1],[0,1]]),diamond:PT([[.5,0],[1,.5],[.5,1],[0,.5]]),
+ pentagon:PT(ngon(5,-Math.PI/2)),hexagon:PT([[.25,0],[.75,0],[1,.5],[.75,1],[.25,1],[0,.5]]),octagon:PT([[.3,0],[.7,0],[1,.3],[1,.7],[.7,1],[.3,1],[0,.7],[0,.3]]),
+ star:PT(starPts),parallelogram:PT([[.25,0],[1,0],[.75,1],[0,1]]),trapezoid:PT([[.2,0],[.8,0],[1,1],[0,1]]),
+ semicircle:'M0 1A.5 1 0 0 1 1 1Z',arrowR:PT([[0,.3],[.6,.3],[.6,0],[1,.5],[.6,1],[.6,.7],[0,.7]]),chevron:PT([[0,0],[.65,0],[1,.5],[.65,1],[0,1],[.35,.5]]),
+ cross:PT([[.35,0],[.65,0],[.65,.35],[1,.35],[1,.65],[.65,.65],[.65,1],[.35,1],[.35,.65],[0,.65],[0,.35],[.35,.35]]),
+ heart:'M.5 .95C.2 .72 0 .52 0 .29 0 .12 .13 0 .28 0 .38 0 .46 .06 .5 .15 .54 .06 .62 0 .72 0 .87 0 1 .12 1 .29 1 .52 .8 .72 .5 .95Z',
+ bubble:'M.08 0H.92Q1 0 1 .1V.62Q1 .72 .92 .72H.4L.18 1 .24 .72H.08Q0 .72 0 .62V.1Q0 0 .08 0Z',
+ cylinder:'M0 .12A.5 .12 0 0 0 1 .12V.88A.5 .12 0 0 1 0 .88Z'};
+const NAMES={frame:'Page / section',note:'Sticky note',task:'Task',text:'Text box',arrow:'Line / arrow',pen:'Drawing',shape:'Shape',image:'Image',link:'Flow arrow'};
 const ico=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const I={
  select:ico('<path d="M5 3l14 8-6 2-2 6z"/>'),
@@ -184,6 +196,7 @@ const I={
  note:ico('<path d="M4 4h16v10l-6 6H4z"/><path d="M14 20v-6h6"/>'),
  task:ico('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7.5 12l3 3 6-6"/>'),
  arrow:ico('<path d="M5 19L19 5M10 5h9v9"/>'),
+ line:ico('<path d="M4 20L20 4"/><circle cx="4" cy="20" r="1.6" fill="currentColor"/><circle cx="20" cy="4" r="1.6" fill="currentColor"/>'),
  link:ico('<rect x="2" y="7" width="6" height="10" rx="1.5"/><rect x="16" y="7" width="6" height="10" rx="1.5"/><path d="M8 12h7M12.5 9.5L15 12l-2.5 2.5"/>'),
  pen:ico('<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>'),
  image:ico('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-9 8"/>'),
@@ -195,7 +208,7 @@ const I={
  details:ico('<circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2a10 10 0 000 20c1.4 0 2-1 2-2 0-1.5-1-1.8-1-3 0-1 .8-2 2-2h2a5 5 0 005-5c0-4.4-4.5-8-10-8z"/>'),
  export:ico('<rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h2M8 12h8M8 16h5"/>')};
 const LOGO=`<svg viewBox="0 0 32 32"><path d="M16 3 28 9.5v13L16 29 4 22.5v-13z" fill="#3f6ff0"/><path d="M16 3 28 9.5 16 16 4 9.5z" fill="#7aa2ff"/><path d="M16 16v13L4 22.5v-13z" fill="#2a54c9"/></svg>`;
-const TOOLS=[['select','Select','V'],['hand','Pan','H'],['frame','Page / section','F'],['shapes','Shapes','S'],['text','Text box','T'],['note','Sticky note','N'],['task','Task','K'],['arrow','Arrow','A'],['link','Flow arrow (link pages)','L'],['pen','Pen','P'],['image','Image','I'],['comps','Components','C']];
+const TOOLS=[['select','Select','V'],['hand','Pan','H'],['frame','Page / section','F'],['shapes','Shapes','S'],['text','Text box','T'],['note','Sticky note','N'],['task','Task','K'],['arrow','Arrow','A'],['line','Straight line (hold Shift for clean angles)','D'],['link','Flow arrow (link pages)','L'],['pen','Pen','P'],['image','Image','I'],['comps','Components','C']];
 
 /* ---------- wireframe components ---------- */
 const COMP={
@@ -353,7 +366,7 @@ function renderHome(){
   $('#app').innerHTML=`<div class="home"><div class="glass"><div class="hero">${LOGO}<h1>Simple Box</h1><p>Open a blank canvas for each client job. Lay out the pages, drop in headers and footers, and draw where each button goes.</p><button class="btn primary big" data-act="start">Start project</button></div>
   ${list.length?`<h2 class="rh">Your projects</h2><div class="plist">${list.map(p=>{const t=p.items.filter(i=>i.type==='task'),d=t.filter(i=>i.status==='done').length,pg=p.items.filter(i=>i.type==='frame'&&i.device).length;
     return `<div class="pcard" data-act="open" data-id="${p.id}"><div class="pt">${esc(p.name)}</div><div class="muted">${esc(p.client||'No client yet')}</div><div class="pm"><span>${pg?pg+(pg>1?' pages':' page')+' · ':''}${t.length?`${d}/${t.length} tasks`:`${p.items.length} item${p.items.length===1?'':'s'}`}</span><span>${ago(p.updated||Date.now())}</span></div><button class="ib del" data-act="delProject" data-id="${p.id}" aria-label="Delete project">×</button></div>`}).join('')}</div>`:''}
-  <div class="hfoot"><button class="link" data-act="backup">Backup</button><button class="link" data-act="restore">Restore</button></div></div></div>`;
+  <div class="hfoot"><button class="link" data-act="backup">Backup</button><button class="link" data-act="restore">Restore</button></div><div style="text-align:center;font-size:12px;color:#8d95a8;margin-top:6px">Simple Box v${APP_VERSION}</div></div></div>`;
 }
 
 /* ---------- canvas ---------- */
@@ -376,7 +389,7 @@ function openProject(id,fresh){
    <div id="drawer"></div>
    <div id="stage"><svg id="svg"><defs>
     <filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity=".45"/></filter>
-    ${MCOL.map((c,n)=>`<marker id="m${n}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker><marker id="L${n}" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join('')}
+    ${MCOL.map((c,n)=>`<marker id="m${n}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker><marker id="s${n}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker><marker id="L${n}" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join('')}
    </defs><g id="world"></g></svg>
    <div class="emptyhint" id="hint"><h2>Blank canvas</h2><p>Use <b>Page</b> on the left to add a page, then drag parts from <b>Components</b> onto it.</p><p><b>Flow arrow</b> links a button or page to the next page.</p><p style="font-size:13px;margin-top:12px">Drag empty space to move · pinch or <kbd>Ctrl</kbd> + scroll to zoom · paste or drop images</p></div>
    <div class="banner" id="banner" hidden></div></div>
@@ -443,6 +456,10 @@ function linkGeom(l){
 }
 function shapeSVG(i){
   const{x,y,w,h}=i,c=i.color||COLORS[2],f=i.fill?c:c+'22',st=`fill="${f}" stroke="${c}" stroke-width="2.5"`;let s='';
+  if(UNIT[i.kind]){const inner=[i.rot?`rotate(${i.rot*90} .5 .5)`:'',i.fx?'translate(1 0) scale(-1 1)':'',i.fy?'translate(0 1) scale(1 -1)':''].join(' ');
+    const ps=`${st} vector-effect="non-scaling-stroke" stroke-linejoin="round"`;
+    s=`<g transform="translate(${x} ${y}) scale(${Math.max(w,1)} ${Math.max(h,1)})"><g transform="${inner}"><path d="${UNIT[i.kind]}" ${ps}/>${i.kind==='cylinder'?`<ellipse cx=".5" cy=".12" rx=".5" ry=".12" ${ps}/>`:''}</g></g>`;
+    return s+(i.label?T(x+8,y,w-16,h,i.label,16,{al:'center',wt:600,c:i.fill?'#15171c':'#e8eaf0'}):'');}
   switch(i.kind){
    case 'circle':s=`<ellipse cx="${x+w/2}" cy="${y+h/2}" rx="${w/2}" ry="${h/2}" ${st}/>`;break;
    case 'triangle':s=`<polygon points="${x+w/2},${y} ${x+w},${y+h} ${x},${y+h}" ${st} stroke-linejoin="round"/>`;break;
@@ -467,7 +484,8 @@ function itemSVG(i){
   case 'task':{const s=STAT.find(x=>x[0]===i.status)||STAT[0],tg=TAGS.find(x=>x[0]===i.tag);
     return `<g data-id="${i.id}" style="cursor:move"><rect x="${i.x}" y="${i.y}" width="${i.w}" height="${i.h}" rx="10" fill="#1b2030" stroke="#2f3647" filter="url(#sh)"/><rect x="${i.x}" y="${i.y}" width="6" height="${i.h}" rx="3" fill="${s[2]}"/><foreignObject x="${i.x+18}" y="${i.y+11}" width="${Math.max(10,i.w-30)}" height="${Math.max(10,i.h-20)}" pointer-events="none"><div class="fo task ${i.status==='done'?'dn':''}"><div class="tt">${esc(i.title||'New task')}</div><div class="tm"><span style="color:${s[2]}">${s[1]}</span>${i.due?` · due ${esc(i.due.slice(5))}`:''}${i.tag&&tg?` · ${tg[1]}`:''}</div></div></foreignObject></g>`}
   case 'text':return `<g data-id="${i.id}" style="cursor:move"><rect x="${i.x}" y="${i.y}" width="${i.w}" height="${i.h}" fill="transparent"/><foreignObject x="${i.x}" y="${i.y}" width="${Math.max(10,i.w)}" height="${Math.max(10,i.h)}" pointer-events="none"><div class="fo" style="font-size:${i.size}px;line-height:1.3;font-weight:${i.size>=30?700:500};color:${c}">${i.text?esc(i.text):'<span class="ph">Type something</span>'}</div></foreignObject></g>`;
-  case 'arrow':return `<g data-id="${i.id}" style="cursor:move"><line x1="${i.x}" y1="${i.y}" x2="${i.x2}" y2="${i.y2}" stroke="transparent" stroke-width="20"/><line x1="${i.x}" y1="${i.y}" x2="${i.x2}" y2="${i.y2}" stroke="${c}" stroke-width="3" stroke-linecap="round" marker-end="url(#m${mi(c)})"/></g>`;
+  case 'arrow':{const hd=i.head||'end',sw=i.sw||3,da=i.dash==='dashed'?`stroke-dasharray="${sw*4} ${sw*3}"`:i.dash==='dotted'?`stroke-dasharray="0 ${sw*2.6}"`:'';
+    return `<g data-id="${i.id}" style="cursor:move"><line x1="${i.x}" y1="${i.y}" x2="${i.x2}" y2="${i.y2}" stroke="transparent" stroke-width="${Math.max(20,sw+14)}"/><line x1="${i.x}" y1="${i.y}" x2="${i.x2}" y2="${i.y2}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" ${da} ${hd==='end'||hd==='both'?`marker-end="url(#m${mi(c)})"`:''} ${hd==='start'||hd==='both'?`marker-start="url(#s${mi(c)})"`:''}/></g>`}
   case 'pen':{const d='M'+i.points.map(q=>q.join(' ')).join('L');return `<g data-id="${i.id}" style="cursor:move"><path d="${d}" fill="none" stroke="transparent" stroke-width="18" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>`}
   case 'link':{const g=linkGeom(i);if(!g)return'';const lc=i.color||ACC,lab=i.label||'',lw=Math.min(280,lab.length*8+30);
     return `<g data-id="${i.id}" style="cursor:pointer"><path d="${g.d}" fill="none" stroke="transparent" stroke-width="24"/><path d="${g.d}" fill="none" stroke="${lc}" stroke-width="4.5" stroke-linecap="round" marker-end="url(#L${mi(lc)})"/><path class="flow" d="${g.d}" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2" stroke-dasharray="2 14" stroke-linecap="round" pointer-events="none"/>${lab?`<rect x="${g.mx-lw/2}" y="${g.my-16}" width="${lw}" height="32" rx="16" fill="${lc}" stroke="#0d0f13" stroke-width="3"/><text x="${g.mx}" y="${g.my+5}" fill="${lc==='#e8eaf0'||lc==='#f2c04b'?'#15171c':'#fff'}" font-size="14" font-weight="600" text-anchor="middle" font-family="Inter,sans-serif">${esc(lab)}</text>`:''}</g>`}
@@ -483,7 +501,10 @@ function selSVG(){
   const i=find(ui.sel);if(!i)return s;const b=bbox(i),hs=14/k;
   if(i.type!=='link')s+=`<rect x="${b.x-6}" y="${b.y-6}" width="${b.w+12}" height="${b.h+12}" rx="8" fill="none" stroke="${ACC}" stroke-width="${1.5/k}" stroke-dasharray="${6/k} ${4/k}" pointer-events="none"/>`;
   else{const g=linkGeom(i);if(g)s+=`<path d="${g.d}" fill="none" stroke="#fff" stroke-width="${2/k}" stroke-dasharray="${6/k} ${5/k}" pointer-events="none"/>`}
-  if(RESIZABLE.includes(i.type))s+=`<rect data-h="se" x="${i.x+i.w-hs/2}" y="${i.y+i.h-hs/2}" width="${hs}" height="${hs}" rx="${3/k}" fill="${ACC}" stroke="#0d0f13" stroke-width="${2/k}" style="cursor:nwse-resize"/>`;
+  if(RESIZABLE.includes(i.type)){const big=i.w*k>46&&i.h*k>46,H=[['nw',0,0],['ne',1,0],['sw',0,1],['se',1,1]].concat(big?[['n',.5,0],['s',.5,1],['w',0,.5],['e',1,.5]]:[]),cur={nw:'nwse',se:'nwse',ne:'nesw',sw:'nesw',n:'ns',s:'ns',e:'ew',w:'ew'};
+    H.forEach(([d,u,v])=>{const hx=i.x+u*i.w,hy=i.y+v*i.h,ww=d.length===1&&(d==='n'||d==='s')?hs*1.6:hs,hh=d.length===1&&(d==='e'||d==='w')?hs*1.6:hs;
+      s+=`<rect data-h="r-${d}" x="${hx-ww/2}" y="${hy-hh/2}" width="${ww}" height="${hh}" rx="${3/k}" fill="${d.length===2?ACC:'#e8eaf0'}" stroke="#0d0f13" stroke-width="${2/k}" style="cursor:${cur[d]}-resize"/>`})}
+  if(ui.tip)s+=`<g pointer-events="none"><rect x="${ui.tip.x+14/k}" y="${ui.tip.y-30/k}" width="${ui.tip.t.length*7.6/k+16/k}" height="${24/k}" rx="${6/k}" fill="#000c"/><text x="${ui.tip.x+22/k}" y="${ui.tip.y-13/k}" fill="#fff" font-size="${13/k}" font-family="Inter,sans-serif">${esc(ui.tip.t)}</text></g>`;
   if(i.type==='arrow')s+=`<circle data-h="a" cx="${i.x}" cy="${i.y}" r="${hs/1.6}" fill="${ACC}"/><circle data-h="b" cx="${i.x2}" cy="${i.y2}" r="${hs/1.6}" fill="${ACC}"/>`;
   if(LINKABLE.includes(i.type)){const cx=b.x+b.w+6+22/k,cy=b.y+b.h/2,r=13/k;
     s+=`<g data-h="link" style="cursor:crosshair"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${ACC}" stroke="#0d0f13" stroke-width="${2/k}"/><path d="M${cx-r*.45} ${cy}h${r*.9}M${cx+r*.1} ${cy-r*.4}l${r*.35} ${r*.4}l${-r*.35} ${r*.4}" stroke="#fff" stroke-width="${2/k}" fill="none" stroke-linecap="round"/></g>`}
@@ -491,12 +512,18 @@ function selSVG(){
 }
 function smart(b,skip,edges){
   const thr=8/V.k,its=P().items.filter(i=>!skip.has(i.id)&&!['link','arrow','pen'].includes(i.type));
-  const xs=edges?[b.x+b.w]:[b.x,b.x+b.w/2,b.x+b.w],ys=edges?[b.y+b.h]:[b.y,b.y+b.h/2,b.y+b.h];let bx=null,by=null;
+  const xs=edges?edges.xs:[b.x,b.x+b.w/2,b.x+b.w],ys=edges?edges.ys:[b.y,b.y+b.h/2,b.y+b.h];let bx=null,by=null;
   for(const o of its){const q=bbox(o),ox=[q.x,q.x+q.w/2,q.x+q.w],oy=[q.y,q.y+q.h/2,q.y+q.h];
     for(const a of xs)for(const t of ox){const d=t-a;if(Math.abs(d)<thr&&(!bx||Math.abs(d)<Math.abs(bx.d)))bx={d,t,q}}
     for(const a of ys)for(const t of oy){const d=t-a;if(Math.abs(d)<thr&&(!by||Math.abs(d)<Math.abs(by.d)))by={d,t,q}}}
   return{bx,by};
 }
+function endPt(fx,fy,px,py,shift){const dx=px-fx,dy=py-fy,L=Math.hypot(dx,dy);if(L<1)return[Math.round(px),Math.round(py)];
+  let a=Math.atan2(dy,dx);const st=Math.PI/12,sa=Math.round(a/st)*st;
+  if(shift||(snapOn()&&Math.abs(a-sa)<Math.PI/60)){const Ls=snapOn()?Math.max(10,Math.round(L/10)*10):L;return[Math.round(fx+Math.cos(sa)*Ls),Math.round(fy+Math.sin(sa)*Ls)]}
+  return[snap(px),snap(py)]}
+const lineAng=i=>Math.round(((Math.atan2(-(i.y2-i.y),i.x2-i.x)*180/Math.PI)+360)%360),lineLen=i=>Math.round(Math.hypot(i.x2-i.x,i.y2-i.y));
+const lineInfo=i=>`${lineAng(i)}° · ${lineLen(i)}px`;
 function guidesFor(b,r){const g=[];
   if(r.bx)g.push({x1:r.bx.t,y1:Math.min(b.y,r.bx.q.y)-20,x2:r.bx.t,y2:Math.max(b.y+b.h,r.bx.q.y+r.bx.q.h)+20});
   if(r.by)g.push({x1:Math.min(b.x,r.by.q.x)-20,y1:r.by.t,x2:Math.max(b.x+b.w,r.by.q.x+r.by.q.w)+20,y2:r.by.t});
@@ -529,7 +556,7 @@ function renderDrawer(){
   if(!ui.drawer){d.classList.remove('show');d.innerHTML='';return}
   d.classList.add('show');
   if(ui.drawer==='shapes'){
-    d.innerHTML=`<div class="dtop"><b>Shapes</b><button class="ib" data-act="closeDrawer" aria-label="Close">×</button></div><div class="dgrid" style="margin-top:12px">${SHAPES.map(([k,n])=>{const[w,h]=SHAPE_DEF[k],sc=Math.min(56/w,48/h);
+    d.innerHTML=`<div class="dtop"><b>Shapes</b><button class="ib" data-act="closeDrawer" aria-label="Close">×</button></div><div class="dgrid" style="margin-top:12px;grid-template-columns:repeat(3,minmax(0,1fr))">${SHAPES.map(([k,n])=>{const[w,h]=SHAPE_DEF[k],sc=Math.min(56/w,48/h);
       return `<button class="dtile ${ui.tool==='shape'&&ui.shapeKind===k?'on':''}" data-act="pickShape" data-id="${k}"><svg viewBox="${-4} ${-4} ${w*sc+8} ${h*sc+8}">${shapeSVG({kind:k,x:0,y:0,w:w*sc,h:h*sc,color:COLORS[2]})}</svg><span>${n}</span></button>`}).join('')}</div><p class="hint">Pick one, then tap or drag on the canvas. Select a shape to add a label, fill it, or link it to a page.</p>`;
   }else{
     const groups=[...new Set(Object.values(COMP).map(c=>c.g))];
@@ -558,12 +585,17 @@ function renderInsp(focus){
   if(i.type==='frame'){f=fi('title','Name',i.title)+fs('device','Type',[['','Section (dashed box)'],['phone','Phone page'],['desktop','Desktop page']],i.device||'')+fs('_size','Size',SIZES,SIZES.some(s=>s[0]===`${i.w}x${i.h}`)?`${i.w}x${i.h}`:'')+goto+(i.device?'':swatches(i,COLORS))+
     `<button class="btn primary wide" data-act="nextPage">Add next page →</button>`}
   if(i.type==='comp'){title=COMP[i.kind].n;f=(['hero','textblock'].includes(i.kind)?fa('label','Text',i.label):fi('label','Text',i.label))+goto}
-  if(i.type==='shape'){title=(SHAPES.find(s=>s[0]===i.kind)||[,'Shape'])[1];f=fi('label','Label',i.label)+fs('fill','Style',[['0','Outline'],['1','Filled']],i.fill?'1':'0')+swatches(i,COLORS)+goto}
+  if(i.type==='shape'){title=(SHAPES.find(s=>s[0]===i.kind)||[,'Shape'])[1];f=fi('label','Label',i.label)+fs('fill','Style',[['0','Outline'],['1','Filled']],i.fill?'1':'0')+
+    (UNIT[i.kind]?`<label class="l">Turn and flip</label><div class="iact" style="margin-top:0"><button class="btn" data-act="rot90">Rotate 90°</button><button class="btn" data-act="flipX">Flip left ↔ right</button><button class="btn" data-act="flipY">Flip upside down</button></div>`:'')+swatches(i,COLORS)+goto}
   if(i.type==='image')f=goto+`<p class="hint">Drag the corner to resize. It keeps its shape.</p>`;
   if(i.type==='note')f=fa('text','Note',i.text)+swatches(i,COLORS)+goto;
   if(i.type==='task')f=fi('title','Task',i.title)+fa('notes','Details',i.notes)+`<div class="row"><div>${fs('status','Status',STAT,i.status)}</div><div>${fs('tag','Type',TAGS,i.tag)}</div></div>`+fi('due','Due date',i.due,'date');
   if(i.type==='text')f=fa('text','Text',i.text)+fs('size','Size',[[14,'Small'],[18,'Body'],[24,'Medium'],[36,'Heading'],[56,'Huge']],i.size)+swatches(i,COLORS)+goto;
-  if(i.type==='arrow'||i.type==='pen')f=swatches(i,COLORS);
+  if(i.type==='arrow'){title=(i.head||'end')==='none'?'Line':'Arrow';
+    f=`<div class="row"><div>${fi('_ang','Angle (°)',lineAng(i),'number')}</div><div>${fi('_len','Length (px)',lineLen(i),'number')}</div></div>`+
+    `<div class="row"><div>${fs('head','Ends',[['none','No arrow'],['end','Arrow end'],['start','Arrow start'],['both','Both ends']],i.head||'end')}</div><div>${fs('dash','Style',[['solid','Solid'],['dashed','Dashed'],['dotted','Dotted']],i.dash||'solid')}</div></div>`+
+    fs('sw','Thickness',[[2,'Thin'],[3,'Normal'],[5,'Thick'],[8,'Extra thick']],i.sw||3)+`<div class="iact" style="margin-top:12px">${[0,45,90,135,180].map(a=>`<button class="btn" data-act="setAng" data-id="${a}">${a}°</button>`).join('')}<button class="btn" data-act="swapEnds">Flip direction</button></div>`+swatches(i,COLORS)+`<p class="hint">Drag either dot to re-angle it. Hold Shift for clean 15° steps.</p>`}
+  if(i.type==='pen')f=swatches(i,COLORS);
   if(!['task','link'].includes(i.type))f+=fa('notes','Build notes (what it does, content, ideas)',i.notes||'');
   if(i.type==='link'){const a=find(i.from),b=find(i.to);const nm=o=>o?(o.type==='frame'?o.title:o.type==='comp'?COMP[o.kind].n:NAMES[o.type]):'?';
     f=`<p class="hint" style="margin-top:4px">${esc(nm(a))} → ${esc(nm(b))}</p>`+fi('label','Label (what makes it go there)',i.label)+swatches(i,MCOL)}
@@ -574,6 +606,8 @@ function renderInsp(focus){
     n.addEventListener('focus',pre);
     n.addEventListener(n.tagName==='SELECT'?'change':'input',()=>{pre();const k=n.dataset.k,v=n.value;
       if(k==='goto'){p.items=p.items.filter(x=>!(x.type==='link'&&x.from===i.id));if(v)addLink(p,i,find(v),'');save();draw();return}
+      if(k==='_ang'||k==='_len'){const a=(k==='_ang'?+v:lineAng(i))*Math.PI/180,L=k==='_len'?Math.max(1,+v||1):lineLen(i);i.x2=Math.round(i.x+Math.cos(a)*L);i.y2=Math.round(i.y-Math.sin(a)*L);save();draw();return}
+      if(k==='sw'){i.sw=+v;save();draw();return}
       if(k==='_size'){if(v){const[w,h]=v.split('x').map(Number);i.w=w;i.h=h}}
       else if(k==='size')i.size=+v;else if(k==='fill')i.fill=v==='1';
       else if(k==='device'){i.device=v||undefined;save();draw();renderInsp();return}
@@ -627,7 +661,7 @@ function bindStage(){
       act={mode:'pan',sx:e.clientX,sy:e.clientY,vx:V.x,vy:V.y};st.classList.add('panning');return}
     if(t==='select'){
       snapshot();
-      if(h){act={mode:h.dataset.h,id:ui.sel}}
+      if(h){const hm=h.dataset.h,it0=find(ui.sel);act=hm.startsWith('r-')?{mode:'rs',dir:hm.slice(2),id:ui.sel,ob:{x:it0.x,y:it0.y,w:it0.w,h:it0.h}}:{mode:hm,id:ui.sel}}
       else{const it=find(g.dataset.id);setSel(it.id);
         if(it.type==='link'){past.pop();act=null;draw();return}
         const kids=it.type==='frame'?p.items.filter(o=>{if(o===it||o.type==='link')return false;const b=bbox(o);
@@ -641,6 +675,7 @@ function bindStage(){
     if(t==='shape'){it={id:uid(),type:'shape',kind:ui.shapeKind,x:sx,y:sy,w:0,h:0,label:'',fill:false,color:c};act={mode:'draw',id:it.id,sx,sy}}
     if(t==='text'){it={id:uid(),type:'text',x:sx,y:sy,w:0,h:0,text:'',size:18,color:'#e8eaf0'};act={mode:'draw',id:it.id,sx,sy}}
     if(t==='arrow'){it={id:uid(),type:'arrow',x:sx,y:sy,x2:sx,y2:sy,color:c};act={mode:'b',id:it.id,isNew:1}}
+    if(t==='line'){it={id:uid(),type:'arrow',head:'none',x:sx,y:sy,x2:sx,y2:sy,color:c};act={mode:'b',id:it.id,isNew:1}}
     if(t==='pen'){it={id:uid(),type:'pen',points:[[Math.round(w.x),Math.round(w.y)]],color:c};act={mode:'pen',id:it.id}}
     if(t==='note')it={id:uid(),type:'note',x:sx-90,y:sy-70,w:180,h:150,text:'',color:c};
     if(t==='task')it={id:uid(),type:'task',x:sx-120,y:sy-45,w:240,h:90,title:'',notes:'',status:'todo',tag:'',due:''};
@@ -662,19 +697,23 @@ function bindStage(){
       if(snapOn()){const nb={x:act.ob.x+dx,y:act.ob.y+dy,w:act.ob.w,h:act.ob.h},r=smart(nb,act.skip);if(r.bx)dx+=r.bx.d;if(r.by)dy+=r.by.d;nb.x=act.ob.x+dx;nb.y=act.ob.y+dy;guidesFor(nb,r)}
       const mv=(o,g)=>{if(o.type==='pen')o.points=g.points.map(q=>[q[0]+dx,q[1]+dy]);else{o.x=g.x+dx;o.y=g.y+dy;if(o.type==='arrow'){o.x2=g.x2+dx;o.y2=g.y2+dy}}};
       mv(i,act.orig);act.kids.forEach(k=>mv(k.o,k.orig))}
-    else if(act.mode==='se'){const mw=i.type==='task'?160:30,mh=i.type==='task'?70:20;i.w=Math.max(mw,snap(w.x)-i.x);i.h=Math.max(mh,snap(w.y)-i.y);
-      if(snapOn()&&i.type!=='image'){const r=smart({x:i.x,y:i.y,w:i.w,h:i.h},new Set([i.id]),true);if(r.bx)i.w+=r.bx.d;if(r.by)i.h+=r.by.d;guidesFor({x:i.x,y:i.y,w:i.w,h:i.h},r)}
-      if(i.type==='image')i.h=i.w/(i.ar||1);
-      if(i.type==='shape'&&(i.kind==='square'||i.kind==='circle')){const s=Math.max(i.w,i.h);i.w=i.h=s}}
-    else if(act.mode==='a'){i.x=snap(w.x);i.y=snap(w.y)}
-    else if(act.mode==='b'){i.x2=snap(w.x);i.y2=snap(w.y)}
+    else if(act.mode==='rs'){const d=act.dir,ob=act.ob,mw=i.type==='task'?160:24,mh=i.type==='task'?70:20;let x1=ob.x,y1=ob.y,x2=ob.x+ob.w,y2=ob.y+ob.h,px=snap(w.x),py=snap(w.y);
+      if(snapOn()){const r=smart({x:px,y:py,w:0,h:0},new Set([i.id]),{xs:d.match(/[ew]/)?[px]:[],ys:d.match(/[ns]/)?[py]:[]});if(r.bx)px+=r.bx.d;if(r.by)py+=r.by.d;guidesFor({x:px,y:py,w:0,h:0},r)}
+      if(d.includes('w'))x1=Math.min(px,x2-mw);if(d.includes('e'))x2=Math.max(px,x1+mw);if(d.includes('n'))y1=Math.min(py,y2-mh);if(d.includes('s'))y2=Math.max(py,y1+mh);
+      const lock=i.type==='image'||(i.type==='shape'&&(i.kind==='square'||i.kind==='circle'));
+      if(lock){const ar=i.type==='image'?(i.ar||ob.w/ob.h):1;
+        if(/[ew]/.test(d)){const nw=x2-x1,nh=nw/ar;if(d.includes('n'))y1=y2-nh;else y2=y1+nh}
+        else{const nh=y2-y1,nw=nh*ar;x2=x1+nw}}
+      i.x=x1;i.y=y1;i.w=x2-x1;i.h=y2-y1}
+    else if(act.mode==='a'){const q=endPt(i.x2,i.y2,w.x,w.y,e.shiftKey);i.x=q[0];i.y=q[1];ui.tip={x:w.x,y:w.y,t:lineInfo(i)}}
+    else if(act.mode==='b'){const q=endPt(i.x,i.y,w.x,w.y,e.shiftKey);i.x2=q[0];i.y2=q[1];ui.tip={x:w.x,y:w.y,t:lineInfo(i)}}
     else if(act.mode==='draw'){const x=snap(w.x),y=snap(w.y);i.x=Math.min(act.sx,x);i.y=Math.min(act.sy,y);i.w=Math.abs(x-act.sx);i.h=Math.abs(y-act.sy);
       if(i.type==='shape'&&(i.kind==='square'||i.kind==='circle')){const s=Math.max(i.w,i.h);i.w=i.h=s}}
     else if(act.mode==='pen'){const l=i.points[i.points.length-1];if(Math.hypot(w.x-l[0],w.y-l[1])>3/V.k)i.points.push([Math.round(w.x),Math.round(w.y)])}
     draw();
   });
   const end=e=>{
-    ptrs.delete(e.pointerId);st.classList.remove('panning');if(ui.guides&&ui.guides.length){ui.guides=[];draw()}ui.alt=false;
+    ptrs.delete(e.pointerId);st.classList.remove('panning');if((ui.guides&&ui.guides.length)||ui.tip){ui.guides=[];ui.tip=null;draw()}ui.alt=false;
     if(!act)return;
     if(act.mode==='pinch'){if(ptrs.size===0)act=null;saveView();return}
     if(act.mode==='pan'){act=null;saveView();return}
@@ -691,7 +730,7 @@ function bindStage(){
     if(i&&act.isNew){created=true;if(Math.hypot(i.x2-i.x,i.y2-i.y)<20)drop=true}
     if(i&&act.mode==='pen'&&i.points.length<2)drop=true;
     if(drop){p.items=p.items.filter(o=>o!==i);ui.sel=null;past.pop()}
-    else if(['move','se','a','b'].includes(act.mode)&&!act.moved&&!act.isNew)past.pop();
+    else if(['move','rs','a','b'].includes(act.mode)&&!act.moved&&!act.isNew)past.pop();
     act=null;
     if(created&&!drop&&ui.tool!=='pen')setTool('select');
     if(ui.tool==='pen')ui.sel=null;
@@ -791,12 +830,12 @@ function exportText(p,withJson){
   const desc=(i,f)=>{const bb=pos(i),ox=f?f.x:0,oy=f?f.y:0,at=`@${R2(bb.x-ox)},${R2(bb.y-oy)}`,full=f&&Math.abs(i.w-f.w)<2,sz=full?`full width × ${R2(i.h)}`:`${R2(bb.w)}×${R2(bb.h)}`;let s;
     switch(i.type){
      case 'comp':s=`${COMP[i.kind].n}${i.label?': '+q(i.label):''} — ${sz} ${at}`;break;
-     case 'shape':s=`${(SHAPES.find(x=>x[0]===i.kind)||[,'Shape'])[1]} shape${i.label?' '+q(i.label):''} — ${i.fill?'filled':'outline'} ${i.color}, ${sz} ${at}`;break;
+     case 'shape':s=`${(SHAPES.find(x=>x[0]===i.kind)||[,'Shape'])[1]} shape${i.label?' '+q(i.label):''} — ${i.fill?'filled':'outline'} ${i.color}, ${sz} ${at}${i.rot?`, rotated ${i.rot*90}°`:''}${i.fx?', flipped left-right':''}${i.fy?', upside down':''}`;break;
      case 'text':s=`Text ${q(i.text)} — ${i.size}px, ${sz} ${at}`;break;
      case 'note':s=`Sticky note: ${q(i.text)} ${at}`;break;
      case 'image':s=`Image (uploaded picture, not included) — ${sz} ${at}`;break;
      case 'task':s=`Task: ${q(i.title||'New task')} [${(STAT.find(x=>x[0]===i.status)||STAT[0])[1]}]`;break;
-     case 'arrow':s=`Arrow from ${R2(i.x-ox)},${R2(i.y-oy)} to ${R2(i.x2-ox)},${R2(i.y2-oy)}`;break;
+     case 'arrow':s=`${(i.head||'end')==='none'?'Line':'Arrow'} from ${R2(i.x-ox)},${R2(i.y-oy)} to ${R2(i.x2-ox)},${R2(i.y2-oy)} (${lineAng(i)}°, ${lineLen(i)}px${i.dash&&i.dash!=='solid'?', '+i.dash:''})`;break;
      case 'pen':s=`Freehand drawing — ${sz} ${at}`;break;
      case 'frame':s=`${i.device?(i.device==='phone'?'Phone page':'Desktop page'):'Section'} "${i.title||'Untitled'}" — ${sz} ${at}`;break;
      default:s=NAMES[i.type]||i.type}
@@ -866,6 +905,11 @@ document.addEventListener('click',e=>{
   case 'addComp':{snapshot();const f=targetFrame(),it=addComp(p,id,f);ui.sel=it.id;ui.snapFor=null;ui.drawer=null;renderDrawer();setTool('select');refresh();ensureVisible(it);draw();break}
   case 'closeDrawer':ui.drawer=null;renderDrawer();setTool(ui.tool);break;
   case 'color':setColor(id);break;
+  case 'rot90':if(i){snapshot();i.rot=((i.rot||0)+1)%4;refresh()}break;
+  case 'flipX':if(i){snapshot();i.fx=!i.fx;refresh()}break;
+  case 'flipY':if(i){snapshot();i.fy=!i.fy;refresh()}break;
+  case 'setAng':if(i&&i.type==='arrow'){snapshot();const a=+id*Math.PI/180,L=lineLen(i);i.x2=Math.round(i.x+Math.cos(a)*L);i.y2=Math.round(i.y-Math.sin(a)*L);refresh()}break;
+  case 'swapEnds':if(i&&i.type==='arrow'){snapshot();[i.x,i.y,i.x2,i.y2]=[i.x2,i.y2,i.x,i.y];refresh()}break;
   case 'icolor':if(i){snapshot();i.color=id;refresh()}break;
   case 'desel':setSel(null);draw();break;
   case 'del':if(i){snapshot();removeItem(p,i);ui.sel=null;refresh()}break;

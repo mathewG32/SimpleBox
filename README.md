@@ -6,7 +6,7 @@ Open a blank canvas for each client job, lay out the pages, drag in headers, foo
 
 ## Download
 
-Go to **[Releases](https://github.com/mathewG32/SimpleBox/releases/latest)** and download **`Simple Box Setup 1.0.0.exe`**. Run it, click through, and Simple Box shows up on your desktop and in the Start menu. No admin rights needed.
+Go to **[Releases](https://github.com/mathewG32/SimpleBox/releases/latest)** and download the latest **`Simple Box Setup x.x.x.exe`**. Run it, click through, and Simple Box shows up on your desktop and in the Start menu. No admin rights needed.
 
 There's also a **Portable** `.exe` that runs without installing.
 
@@ -14,12 +14,17 @@ There's also a **Portable** `.exe` that runs without installing.
 
 To uninstall: Settings > Apps > Simple Box > Uninstall. Your projects stay in `%APPDATA%\Simple Box`, so reinstalling brings them back.
 
+## Updating
+
+Download the newest installer from Releases and run it. It replaces the old version in place and keeps all your projects. No need to uninstall first.
+
 ## Features
 
 - **Start presets**: Blank, Mobile, App or Website (one empty page), or a full starter with pages already filled in and linked
+- **Resize from any side or corner**
 - **Canvas**: pan, pinch or Ctrl + scroll to zoom, fit to screen, undo/redo
 - **Snapping**: grid snap plus smart alignment guides (pink lines) to edges and centers of other items. Toggle it in the top bar, or hold **Alt** to skip it once
-- **Tools**: pages and sections, shapes (rectangle, square, circle, triangle, diamond, rounded), text boxes, sticky notes, tasks, arrows, a pen, and images (button, paste or drag and drop)
+- **Tools**: pages and sections, 20 shapes (with rotate and flip), straight lines you can angle, text boxes, sticky notes, tasks, arrows, a pen, and images (button, paste or drag and drop)
 - **Components**: 19 wireframe parts (header, hero, features, pricing, gallery, footer, card, button, form, map, tab bar and more) plus 5 whole-page templates. Drag them onto a page; headers and footers snap into place
 - **Flow arrows**: link a button or page to the next page, with a label like "Log in"
 - **Project details**: vibe, color palette (with presets), fonts, corner style, imagery, goals, audience, must-haves
@@ -35,7 +40,7 @@ To uninstall: Settings > Apps > Simple Box > Uninstall. Your projects stay in `%
 ## Build the installer yourself
 
 1. Double-click **`Build Installer.bat`**. It takes a few minutes the first time.
-2. It opens the `dist` folder with **`Simple Box Setup 1.0.0.exe`** and a portable `.exe`.
+2. It opens the `dist` folder with the **`Simple Box Setup`** installer and a portable `.exe`.
 
 **Automatic builds:** `.github/workflows/release.yml` builds the installer on GitHub's servers. Push a version tag (for example `git tag v1.0.1 && git push --tags`) and the installer is attached to a new Release automatically.
 

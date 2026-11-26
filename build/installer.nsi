@@ -5,7 +5,7 @@ Unicode true
 !include "MUI2.nsh"
 
 !define APPNAME   "Simple Box"
-!define VERSION   "1.0.0"
+!define VERSION   "1.1.0"
 !define PUBLISHER "Mathew Valdez"
 !define EXE       "Simple Box.exe"
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SimpleBox"

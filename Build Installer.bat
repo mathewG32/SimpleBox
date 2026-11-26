@@ -30,6 +30,6 @@ if errorlevel 1 (
 )
 
 echo.
-echo  Done! Opening the dist folder. Double-click "Simple Box Setup 1.0.0.exe" to install.
+echo  Done! Opening the dist folder. Double-click the "Simple Box Setup" file to install.
 start "" "%~dp0dist"
 pause
